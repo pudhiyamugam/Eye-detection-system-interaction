@@ -3,8 +3,8 @@ import cv2, dlib, time, pyautogui, numpy as np
 import subprocess, pygetwindow as gw
 
 # ---------------- Config ----------------
-EAR_THRESHOLD = 0.17
-LONG_BLINK_TIME = 0.6
+EAR_THRESHOLD = 0.18
+LONG_BLINK_TIME = 0.8
 DOUBLE_MAX_INTERVAL = 0.4
 MOVE_INTERVAL = 0.9
 GRID_COLS = 9
