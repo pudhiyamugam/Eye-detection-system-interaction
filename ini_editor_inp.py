@@ -76,6 +76,7 @@ def execute_system_command(cmd):
         if cmd=="SAVE":
             with pyautogui.hold('ctrl'):
                 pyautogui.press('s')
+                
         elif cmd=="ENTER":
             pyautogui.press('enter')
 
