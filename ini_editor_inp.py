@@ -1,6 +1,6 @@
 # blink_keyboard_notepad.py
 import cv2, dlib, time, pyautogui, numpy as np
-import subprocess, pygetwindow as gw
+import subprocess, pygetwindow as gw, win32gui, win32con
 
 # ---------------- Config ----------------
 EAR_THRESHOLD = 0.18
@@ -10,7 +10,7 @@ MOVE_INTERVAL = 0.9
 GRID_COLS = 9
 GRID_ROWS = 3
 LETTERS = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ") + [" ","SYS >"]  # 27 items
-SYS_KEYS = ["ENTER", "TAB", "SAVE", "BACK"]
+SYS_KEYS = ["ENTER","🪟","TAB", "SAVE", "BACK"]
 
 # ---------------- Helpers ----------------
 def euclidean_dist(p1, p2):
@@ -45,8 +45,8 @@ START_Y = (WINDOW_H - GRID_H) // 2  # This puts it in the middle
 
 # ---------------- State ----------------
 pointer_index = 0
-active_list=LETTERS
-current_menu="TEXT"
+active_list=SYS_KEYS
+current_menu="SYS"
 auto_move = False
 last_move_time = time.time()
 
@@ -54,20 +54,11 @@ closed_start = None
 last_short_blink_time = 0
 short_blink_count = 0
 
-# ---------------- Launch Notepad ----------------
-print(">>> Opening Notepad...")
-subprocess.Popen(["notepad.exe"])
-time.sleep(2)  # wait for Notepad to ope
-
-# bring Notepad to front
-try:
-    notepad = gw.getWindowsWithTitle("Untitled - Notepad")[0]
-    notepad.activate()
-except:
-    print("⚠️ Could not focus Notepad window. Please click on it manually.")
-
 # ---------------- VideoCapture ----------------
 cap = cv2.VideoCapture(0)
+
+cv2.namedWindow("Blink Keyboard", cv2.WINDOW_NORMAL)
+cv2.setWindowProperty("Blink Keyboard", cv2.WND_PROP_TOPMOST, 1)
 
 def execute_system_command(cmd):
     print(f"executig system command{cmd}")
@@ -82,15 +73,17 @@ def execute_system_command(cmd):
 
         elif cmd=="TAB":
             pyautogui.press('tab')
+        elif cmd=="🪟":
+            pyautogui.press('win')
     except Exception as e:
         print(f"ERROR executing command {e}")
 
 def type_character(ch):
     """Send keystroke directly to Notepad"""
-    try:
+    """try:
         notepad.activate()   # make sure Notepad is focused
     except:
-        pass
+        pass"""
     if ch == " ":
         pyautogui.press('space')
     else:
@@ -155,16 +148,17 @@ while True:
                 if duration >= LONG_BLINK_TIME:
                     selected_key=active_list[pointer_index]
 
-                    if selected_key=="SYS >":
-                        active_list=SYS_KEYS
-                        current_menu="SYS"
-                        pointer_index=0
-                        print("switeched to system control💀")
-
-                    elif selected_key=="BACK":
+                    if selected_key=="BACK":
                         active_list=LETTERS
                         current_menu="TEXT"
                         pointer_index=0
+                        print("switeched to keyboard💀")
+
+                    elif selected_key=="SYS >":
+                        active_list=SYS_KEYS
+                        current_menu="SYS"
+                        pointer_index=0
+                        print("switeche to system control")
 
                     elif current_menu=="SYS":
                         execute_system_command(selected_key)
@@ -198,3 +192,4 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
+
